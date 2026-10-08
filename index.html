@@ -6,12 +6,13 @@
 <title>Thiệp chào đón thành viên CLB Bóng chuyền PYU</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }  /* chặn điện thoại tự phóng to chữ */
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: "Segoe UI", Arial, sans-serif; background: #eef1f5; padding: 24px;
          display: flex; flex-wrap: wrap; gap: 28px; justify-content: center; align-items: flex-start; }
 
   /* ================= BẢNG ĐIỀU KHIỂN ================= */
-  .panel { background: #fff; padding: 22px; border-radius: 16px; width: 320px;
+  .panel { background: #fff; padding: 22px; border-radius: 16px; width: 100%; max-width: 320px;
            box-shadow: 0 4px 20px rgba(0,0,0,.06); }
   .panel h2 { font-size: 18px; margin-bottom: 4px; color: #33466b; }
   .panel .sub { font-size: 12px; color: #8a94a6; margin-bottom: 10px; }
@@ -53,7 +54,11 @@
   .frame { position: absolute; inset: 12px; border: 1.5px solid var(--c1); border-radius: 18px; opacity: .55; }
   .frame::after { content: ""; position: absolute; inset: 5px; border: 1px dashed var(--c2); border-radius: 14px; }
 
-  .content { position: absolute; inset: 0; padding: 32px 30px; }
+  #stage { width: 420px; height: 640px; flex: none; }
+  #card { transform-origin: top left; }
+  .content { position: absolute; inset: 0; padding: 32px 30px 26px; display: flex; flex-direction: column; align-items: center; }
+  .content > * { flex-shrink: 0; }
+  .top { width: 100%; }
 
   .top { display: flex; align-items: center; justify-content: space-between; }
   .logo { width: 70px; height: 70px; border-radius: 50%; background: #fff; border: 3px solid #fff;
@@ -61,7 +66,7 @@
   .club { text-align: right; font-weight: 700; font-size: 14px; letter-spacing: 2px; line-height: 1.5; }
   .club small { display: block; font-size: 10.5px; font-weight: 500; letter-spacing: 3px; color: var(--c1); }
 
-  .hello { margin-top: 20px; font-size: 11.5px; letter-spacing: 5px; font-weight: 600; color: var(--c1); }
+  .hello { margin-top: 20px; line-height: 1.3; font-size: 11.5px; letter-spacing: 5px; font-weight: 600; color: var(--c1); }
   .welcome { font-family: Georgia, "Times New Roman", serif; font-style: italic; font-size: 46px;
              line-height: 1.1; margin-top: 2px; color: var(--ink); }
   .welcome em { font-style: normal; font-weight: 700; color: var(--c1); }
@@ -77,12 +82,13 @@
   .badge { position: absolute; right: 2px; bottom: 10px; width: 52px; height: 52px; border-radius: 50%;
            background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,.18); font-size: 28px; line-height: 52px; }
 
-  .name { margin-top: 20px; white-space: nowrap; font-family: Georgia, "Times New Roman", serif; font-size: 30px; font-weight: 700; }
+  .name { margin-top: 20px; line-height: 1.25; white-space: nowrap; font-family: Georgia, "Times New Roman", serif; font-size: 30px; font-weight: 700; }
   .divider { margin: 10px auto 0; width: 120px; height: 2px; position: relative;
              background: linear-gradient(90deg, transparent, var(--c1), transparent); }
-  .class { display: inline-block; margin-top: 14px; padding: 6px 22px; border-radius: 30px; font-size: 15px;
+  .class { display: inline-block; line-height: 1.3; margin-top: 14px; padding: 6px 22px; border-radius: 30px; font-size: 15px;
            font-weight: 600; letter-spacing: 1px; background: var(--pill); color: var(--pilltxt); }
-  .foot { position: absolute; bottom: 28px; left: 0; right: 0; font-size: 12px; letter-spacing: 1px; opacity: .75; }
+  .foot { margin-top: auto; line-height: 1.4; font-size: 12px; letter-spacing: 1px; opacity: .75; }
+  @media (max-width: 760px) { body { padding: 14px; gap: 18px; } #stage { order: -1; } }
 </style>
 </head>
 <body>
@@ -121,7 +127,7 @@
 </div>
 
 <!-- ============ THIỆP ============ -->
-<div id="card" data-theme="pyu">
+<div id="stage"><div id="card" data-theme="pyu">
   <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
 
   <!-- bóng chuyền vẽ bằng SVG -->
@@ -152,15 +158,23 @@
     <div class="name" id="name">Nguyễn Văn A</div>
     <div class="divider"></div>
     <div class="class" id="class">Lớp 12A1</div>
+    <div class="foot">Cùng nhau bay cao · Cùng nhau chiến thắng</div>
   </div>
-
-  <div class="foot">Cùng nhau bay cao · Cùng nhau chiến thắng</div>
-</div>
+</div></div>
 
 <script>
   const $ = id => document.getElementById(id);
   const BOX = 218;                       // kích thước khung ảnh tròn (px), khớp với CSS #avatarBox
-  const st = { zoom: 1, x: 0, y: 0 };    // trạng thái chỉnh ảnh
+  const st = { zoom: 1, x: 0, y: 0 };
+  let scale = 1;                         // tỉ lệ thu nhỏ thiệp trên màn hình nhỏ
+  function fitStage() {
+    scale = Math.min(1, (document.documentElement.clientWidth - 28) / 420);
+    $("card").style.transform = "scale(" + scale + ")";
+    $("stage").style.width = 420 * scale + "px";
+    $("stage").style.height = 640 * scale + "px";
+  }
+  window.addEventListener("resize", fitStage);
+  fitStage();    // trạng thái chỉnh ảnh
 
   // ---------- Ảnh mặc định ----------
   const svgURL = s => "data:image/svg+xml;utf8," + encodeURIComponent(s);
@@ -199,8 +213,8 @@
   };
   $("avatarBox").onpointermove = e => {
     if (!drag) return;
-    st.x = drag.x + e.clientX - drag.px;
-    st.y = drag.y + e.clientY - drag.py;
+    st.x = drag.x + (e.clientX - drag.px) / scale;
+    st.y = drag.y + (e.clientY - drag.py) / scale;
     render();
   };
   $("avatarBox").onpointerup = () => drag = null;
@@ -241,12 +255,13 @@
 
   // ---------- Tải thiệp ----------
   $("btnSave").onclick = () => {
-    html2canvas($("card"), { scale: 2, useCORS: true, backgroundColor: null }).then(canvas => {
+    $("card").style.transform = "none";   // chụp ở kích thước gốc
+    html2canvas($("card"), { scale: 2, useCORS: true, backgroundColor: null, scrollX: 0, scrollY: 0 }).then(canvas => {
       const a = document.createElement("a");
       a.download = "thiep-chao-mung-pyu.png";
       a.href = canvas.toDataURL("image/png");
       a.click();
-    });
+    }).finally(fitStage);
   };
 </script>
 </body>
