@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Thiệp chào đón thành viên CLB Bóng chuyền PYU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }  /* chặn điện thoại tự phóng to chữ */
@@ -67,7 +70,7 @@
   .club small { display: block; font-size: 10.5px; font-weight: 500; letter-spacing: 3px; color: var(--c1); }
 
   .hello { margin-top: 20px; line-height: 1.3; font-size: 11.5px; letter-spacing: 5px; font-weight: 600; color: var(--c1); }
-  .welcome { font-family: Georgia, "Times New Roman", serif; font-style: italic; font-size: 46px;
+  .welcome { font-family: "Playfair Display", Cambria, "Noto Serif", "Times New Roman", serif; font-style: italic; font-size: 46px;
              line-height: 1.1; margin-top: 2px; color: var(--ink); }
   .welcome em { font-style: normal; font-weight: 700; color: var(--c1); }
 
@@ -82,7 +85,7 @@
   .badge { position: absolute; right: 2px; bottom: 10px; width: 52px; height: 52px; border-radius: 50%;
            background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,.18); font-size: 28px; line-height: 52px; }
 
-  .name { margin-top: 20px; line-height: 1.25; white-space: nowrap; font-family: Georgia, "Times New Roman", serif; font-size: 30px; font-weight: 700; }
+  .name { margin-top: 20px; line-height: 1.25; white-space: nowrap; font-family: "Playfair Display", Cambria, "Noto Serif", "Times New Roman", serif; font-size: 30px; font-weight: 700; }
   .divider { margin: 10px auto 0; width: 120px; height: 2px; position: relative;
              background: linear-gradient(90deg, transparent, var(--c1), transparent); }
   .class { display: inline-block; line-height: 1.3; margin-top: 14px; padding: 6px 22px; border-radius: 30px; font-size: 15px;
@@ -233,8 +236,9 @@
     let size = 30;
     while (el.scrollWidth > 350 && size > 16) { size -= 1; el.style.fontSize = size + "px"; }
   }
-  $("inName").oninput = e => { $("name").textContent = e.target.value; fitName(); };
-  $("inClass").oninput = e => $("class").textContent = e.target.value;
+  $("inName").oninput = e => { $("name").textContent = e.target.value.normalize("NFC"); fitName(); };
+  $("inClass").oninput = e => $("class").textContent = e.target.value.normalize("NFC");
+  if (document.fonts) document.fonts.ready.then(fitName);   // tính lại cỡ chữ khi font đã tải xong
 
   // ---------- Chọn ảnh ----------
   $("inPhoto").onchange = e => {
